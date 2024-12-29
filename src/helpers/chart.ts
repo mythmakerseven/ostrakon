@@ -24,11 +24,6 @@ export function addImgElements(chart: Chart): Chart {
       return null
     }
 
-    const cover = new Image()
-
-    cover.src = item.coverURL
-    item.coverImg = cover
-
     return item
   })
 
@@ -58,9 +53,6 @@ export function createChartItem(item: Result): ChartItem {
   if (isBookResult(item)) {
     return {
       title: item.title,
-      coverImg: setImage(
-        `https://covers.openlibrary.org/b/olid/${item.cover_edition_key}-L.jpg`,
-      ),
       coverURL: `https://covers.openlibrary.org/b/olid/${item.cover_edition_key}-L.jpg`,
       creator: item.author_name[0],
     }
@@ -69,7 +61,6 @@ export function createChartItem(item: Result): ChartItem {
     const largestImageIndex = item.image.length - 1
     return {
       title: item.name,
-      coverImg: setImage(item.image[largestImageIndex]['#text']),
       coverURL: item.image[largestImageIndex]['#text'],
       creator: item.artist,
     }
@@ -77,21 +68,18 @@ export function createChartItem(item: Result): ChartItem {
   else if (isGameResult(item)) {
     return {
       title: item.name,
-      coverImg: setImage(item.cover),
       coverURL: item.cover,
     }
   }
   else if (isMovieResult(item)) {
     return {
       title: item.title,
-      coverImg: setImage(`https://image.tmdb.org/t/p/w185/${item.poster_path}`),
       coverURL: `https://image.tmdb.org/t/p/w185/${item.poster_path}`,
     }
   }
   else if (isTVResult(item)) {
     return {
       title: item.name,
-      coverImg: setImage(`https://image.tmdb.org/t/p/w185/${item.poster_path}`),
       coverURL: `https://image.tmdb.org/t/p/w185/${item.poster_path}`,
     }
   }
@@ -99,7 +87,6 @@ export function createChartItem(item: Result): ChartItem {
     return {
       title: item.title,
       creator: item.creator,
-      coverImg: setImage(item.imageURL),
       coverURL: item.imageURL,
     }
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import type { Ref } from 'vue'
+import { ref } from 'vue'
 
 const emit = defineEmits([
   'updateResults',

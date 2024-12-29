@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
 import type { Ref } from 'vue'
+import type { Result } from '../../../types'
+import { onMounted, ref } from 'vue'
 import { isValidSearchType } from '../../../helpers/typeGuards'
 import { SearchTypes } from '../../../types'
 import SearchDropdown from './SearchDropdown.vue'
 import SearchForm from './SearchForm.vue'
 import SearchTypePicker from './SearchTypePicker.vue'
-import type { Result } from '../../../types'
 
 const searchType: Ref<SearchTypes> = ref(SearchTypes.Music)
 const results: Ref<Result[]> = ref([])

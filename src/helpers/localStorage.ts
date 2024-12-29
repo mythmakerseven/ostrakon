@@ -136,10 +136,6 @@ export function migrateChart(chart: StoredPremigrationChart) {
       ? chart.data.background?.value || ''
       : ''
 
-    chart.data.backgroundImg = chart.data.background?.img
-      ? chart.data.background.img
-      : null
-
     return true
   }
 }

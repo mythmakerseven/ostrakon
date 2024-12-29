@@ -2,6 +2,7 @@
 import type { ChartItem } from '../../../types'
 import { ref, watch } from 'vue'
 import { useStore } from '../../../store'
+import Item from './Item.vue'
 
 const props = defineProps(['row'])
 
@@ -53,10 +54,7 @@ watch(() => [store.chart.items, store.chart.size], () => {
     <template
       v-for="(d) in data" :key="d.index"
     >
-      <div class="item">
-        <img v-if="d.item" :alt="d.title" :src="d.item.coverURL">
-        <img v-else src="/placeholder.svg">
-      </div>
+      <Item :item="d.item" :index="d.index" />
     </template>
     <ol v-if="store.chart.showTitles && data.some(i => i.title)" ref="titleListRef" class="title-list">
       <li v-for="(d, idx) in data.filter(i => i && i.title)" :key="idx">
@@ -71,23 +69,6 @@ watch(() => [store.chart.items, store.chart.size], () => {
 .item-row {
   display: flex;
   justify-content: flex-start;
-}
-
-.item {
-  height: 260px;
-  width: 260px;
-  min-height: 260px;
-  min-width: 260px;
-}
-
-img {
-  height: 100%;
-  width: 100%;
-  object-fit: contain;
-}
-
-img:hover {
-  cursor: pointer;
 }
 
 .title-list {

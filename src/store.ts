@@ -18,7 +18,6 @@ export const initialState = {
     backgroundUrl: '',
     backgroundColor: '#000000',
     backgroundType: BackgroundTypes.Color,
-    backgroundImg: null,
     showNumbers: false,
     showTitles: true,
     gap: 20,
@@ -27,30 +26,6 @@ export const initialState = {
     shadows: true,
   },
 } as State
-
-// Image elements are stored in localStorage as empty objects ({})
-// so we need to fill in the img elements when a chart first loads.
-function hydrateImages(chart: Chart) {
-  return {
-    ...chart,
-    backgroundImg: chart.backgroundType === 'image'
-      ? (() => {
-          const img = new Image()
-          img.src = chart.backgroundUrl
-          return img
-        })()
-      : null,
-    items: chart.items.map((i) => {
-      if (i && i.coverURL) {
-        const img = new Image()
-        img.src = i.coverURL
-        return { ...i, coverImg: img }
-      }
-
-      return i
-    }),
-  }
-}
 
 export const useStore = defineStore('store', {
   state() {
@@ -69,12 +44,19 @@ export const useStore = defineStore('store', {
     // For changing the place of a current item
     moveItem(payload: { item: ChartItem, oldIndex: number, newIndex: number }) {
       const itemsArray = [...this.chart.items]
+      const existingItemAtIndex = itemsArray[payload.newIndex]
 
-      // Remove the item from its old index
-      itemsArray.splice(payload.oldIndex, 1)
+      if (existingItemAtIndex) {
+        // Remove the item from its old index
+        itemsArray.splice(payload.oldIndex, 1)
 
-      // Add the item at its new index
-      itemsArray.splice(payload.newIndex, 0, payload.item)
+        // Add the item at its new index
+        itemsArray.splice(payload.newIndex, 0, payload.item)
+      }
+      else {
+        itemsArray[payload.oldIndex] = null
+        itemsArray[payload.newIndex] = payload.item
+      }
 
       this.chart = { ...this.chart, items: [...itemsArray] }
     },
@@ -88,26 +70,12 @@ export const useStore = defineStore('store', {
       }
     },
     setBackgroundUrl(url: string) {
-      const img = new Image()
-      img.src = url
-      img.onload = () => {
-        this.chart = { ...this.chart, backgroundImg: img }
-      }
-
       this.chart = {
         ...this.chart,
         backgroundUrl: url,
       }
     },
     setBackgroundType(backgroundType: BackgroundTypes) {
-      if (backgroundType === BackgroundTypes.Image && this.chart.backgroundUrl) {
-        const img = new Image()
-        img.src = this.chart.backgroundUrl
-        img.onload = () => {
-          this.chart = { ...this.chart, backgroundImg: img }
-        }
-      }
-
       this.chart = {
         ...this.chart,
         backgroundType,
@@ -144,7 +112,7 @@ export const useStore = defineStore('store', {
       this.chart = { ...this.chart, shadows: newValue }
     },
     setEntireChart(payload: Chart) {
-      this.chart = hydrateImages(payload)
+      this.chart = { ...payload }
     },
     reset() {
       this.chart = { ...initialState.chart }

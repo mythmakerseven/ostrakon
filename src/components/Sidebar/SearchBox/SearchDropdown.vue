@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import { createChartItem } from '../../../helpers/chart'
-import { useStore } from '../../../store'
-import {
-  SearchTypes,
-} from '../../../types'
-import ResultItem from './ResultItem.vue'
 import type {
   BookResult,
   GameResult,
@@ -13,6 +7,12 @@ import type {
   Result,
   TVResult,
 } from '../../../types'
+import { createChartItem } from '../../../helpers/chart'
+import { useStore } from '../../../store'
+import {
+  SearchTypes,
+} from '../../../types'
+import ResultItem from './ResultItem.vue'
 
 interface Props {
   results: any[]
@@ -73,11 +73,12 @@ function addToChart(item: Result): void {
 }
 
 function initDrag(event: DragEvent, result: Result): void {
-  const itemString = JSON.stringify(createChartItem(result))
-  // Some null-checking is needed here to satisfy TS
+  const dragData = JSON.stringify({
+    item: createChartItem(result),
+  })
+
   if (event.dataTransfer) {
-    // Put the item object into the the payload
-    event.dataTransfer.setData('application/json', itemString)
+    event.dataTransfer.setData('application/json', dragData)
   }
 }
 </script>

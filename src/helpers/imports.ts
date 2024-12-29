@@ -2,10 +2,10 @@
 
 // Functions related to importing and exporting charts
 
+import type { ChartItem, StoredChart, StoredCharts, StoredPremigrationChart } from '../types'
 import { BackgroundTypes } from '../types'
 import { forceRefresh } from './chart'
 import { appendChart, findByUuid, getActiveChart, getActiveChartUuid, getNewestChartUuid, migrateChart, setActiveChart, updateStoredChart } from './localStorage'
-import type { ChartItem, StoredChart, StoredCharts, StoredPremigrationChart } from '../types'
 
 async function unzlib(data: Uint8Array) {
   const stream = new Response(data).body.pipeThrough(new DecompressionStream('deflate'))
@@ -207,7 +207,6 @@ export async function importTopsters2(event: Event) {
             const item: ChartItem = {
               title: card.title,
               coverURL: card.src,
-              coverImg: img,
             }
             items.push(item)
           }
@@ -220,7 +219,6 @@ export async function importTopsters2(event: Event) {
               items,
               size: chartSize,
               backgroundColor: background.startsWith('#') ? background : '#000000',
-              backgroundImg: null,
               backgroundType: background.startsWith('#') ? BackgroundTypes.Color : BackgroundTypes.Image,
               backgroundUrl: background.startsWith('#') ? '' : background,
               shadows: custom.shadowed,

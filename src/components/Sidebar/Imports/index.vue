@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { Ref } from 'vue'
 import {
   BIcon2CircleFill,
   BIconArrowDownSquare,
   BIconArrowUpSquare,
 } from 'bootstrap-icons-vue'
 import { ref } from 'vue'
-import type { Ref } from 'vue'
 import {
   exportCurrentChart,
   importChart,
