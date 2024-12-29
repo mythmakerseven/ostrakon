@@ -54,7 +54,7 @@ watch(() => [store.chart.items, store.chart.size], () => {
     <template
       v-for="(d) in data" :key="d.index"
     >
-      <Item :item="d.item" :index="d.index" />
+      <Item :item="d.item" :index="d.index" :title="d.title" />
     </template>
     <ol v-if="store.chart.showTitles && data.some(i => i.title)" ref="titleListRef" class="title-list">
       <li v-for="(d, idx) in data.filter(i => i && i.title)" :key="idx">

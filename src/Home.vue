@@ -100,6 +100,7 @@ h1, h2, h3, h4 {
 body {
   background: #2a2a2a;
   touch-action: manipulation;
+  overflow-x: hidden;
 }
 
 button {

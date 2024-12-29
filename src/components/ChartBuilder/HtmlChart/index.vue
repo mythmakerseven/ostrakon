@@ -45,6 +45,12 @@ watch(store, () => {
     else {
       chartRef.value.style.fontFamily = 'monospace'
     }
+
+    if (store.chart.shadows) {
+      chartRef.value.style.textShadow = '2px 2px 4px rgba(0,0,0,0.6)'
+    }
+
+    chartRef.value.style.color = store.chart.textColor
   }
 
   onResize()
