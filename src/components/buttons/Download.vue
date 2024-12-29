@@ -2,16 +2,13 @@
 import { BIconArrowRepeat, BIconFileEarmarkArrowDown } from 'bootstrap-icons-vue'
 import { ref } from 'vue'
 import { downloadChart } from '../../helpers/chart'
-import { useStore } from '../../store'
 
 const loading = ref(false)
-
-const store = useStore()
 
 async function saveChart() {
   loading.value = true
 
-  await downloadChart(store.chart)
+  await downloadChart()
 
   loading.value = false
 }

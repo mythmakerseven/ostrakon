@@ -1,14 +1,11 @@
 // Functions for filling in the chart.
 
-import fetchImageURL from '../api/fetchImage'
-import generateChart from '../chartgen'
-import { initialState, useStore } from '../store'
-import {
-  BackgroundTypes,
-  type Chart,
-  type ChartItem,
-  type Result,
+import type {
+  Chart,
+  ChartItem,
+  Result,
 } from '../types'
+import { initialState, useStore } from '../store'
 import { appendChart, getActiveChart, setActiveChart } from './localStorage'
 import {
   isBookResult,
@@ -111,80 +108,39 @@ export function createChartItem(item: Result): ChartItem {
   }
 }
 
-export async function downloadChart(chart: Chart): Promise<void> {
-  const chartData = { ...chart }
-  const downloadableChart = await createDownloadableChart(chartData)
-  const chartURL = downloadableChart.toDataURL()
-  saveChartImage(chartURL)
-}
+export async function downloadChart(): Promise<void> {
+  const html2canvas = await import('html2canvas')
+  const element = document.querySelector('#chart') as HTMLElement
 
-// Hacky way to make sure all images are loaded in before saving the chart
-async function fillInItems(chart: Chart) {
-  const promises = []
-
-  // Get background image
-  if (
-    chart.backgroundType === BackgroundTypes.Image
-    && chart.backgroundUrl
-  ) {
-    const bgImgURL = await fetchImageURL(chart.backgroundUrl)
-    promises.push(
-      new Promise<void>((resolve) => {
-        const bgImg = new Image()
-        bgImg.src = bgImgURL
-        bgImg.onload = () => {
-          resolve()
-        }
-        bgImg.onerror = () => {
-          // eslint-disable-next-line no-console
-          console.log(`Error downloading image from ${bgImgURL}`)
-          resolve()
-        }
-        chart.backgroundImg = bgImg
-      }),
-    )
+  if (!element) {
+    throw new Error('Chart not found! Something must have gone horribly wrong.')
   }
 
-  const visibleItems = chart.items.slice(0, chart.size.x * chart.size.y)
-
-  // Get chart item images
-  for (const item of visibleItems) {
-    if (item) {
-      const localURL = await fetchImageURL(item.coverURL)
-      promises.push(
-        new Promise<void>((resolve) => {
-          item.coverImg.src = localURL
-          item.coverImg.onload = () => {
-            resolve()
-          }
-        }),
-      )
-    }
+  // Remove the scale transform - otherwise, html2canvas
+  // will download a degraded quality version of the chart.
+  const onclone = (doc) => {
+    const chart = doc.querySelector('#chart') as HTMLElement
+    chart.style.transform = 'none'
   }
 
-  await Promise.all(promises)
+  const result = await html2canvas.default(element, {
+    useCORS: true,
+    onclone,
+    proxy: import.meta.env.VITE_BACKEND_URL,
+  })
 
-  return chart
-}
-
-// Create a new canvas to render the final downloadable version.
-// This is needed to avoid CORS issues with third-party images.
-async function createDownloadableChart(data: Chart): Promise<HTMLCanvasElement> {
-  const chartCanvas = document.createElement('canvas')
-  const chart = await fillInItems(data)
-
-  // Populate the chart with the items etc.
-  generateChart(chartCanvas, chart)
-
-  return chartCanvas
+  const blob = await new Promise(resolve => result.toBlob(resolve)) as Blob
+  const url = URL.createObjectURL(blob)
+  saveChartImage(url)
 }
 
 // Saves the chart as an image
 function saveChartImage(url: string): void {
-  // Download the canvas
   const link = document.createElement('a')
   link.download = 'chart.png'
   link.href = url
+  link.rel = 'noopener'
+  link.target = '_self'
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

@@ -23,8 +23,9 @@ import TopBar from './TopBar.vue'
 .chart-builder-contents {
   margin: 0 auto;
   padding: 0;
-  max-width: 100%;
+  width: 100%;
   max-height: 100%;
+  overflow: hidden;
 }
 
 @media screen and (max-width: 1000px) {

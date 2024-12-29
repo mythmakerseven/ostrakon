@@ -17,7 +17,7 @@ const loading: Ref<boolean> = ref(false)
 
 async function saveChart() {
   loading.value = true
-  await downloadChart(store.chart)
+  await downloadChart()
   loading.value = false
 }
 

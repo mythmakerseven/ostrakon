@@ -1,5 +1,5 @@
-import { errorMessages } from './errors'
 import type { IgdbItem } from '../types'
+import { errorMessages } from './errors'
 
 async function queryIGDB(query: string): Promise<IgdbItem[]> {
   if (query === '') {
