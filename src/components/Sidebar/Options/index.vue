@@ -109,6 +109,14 @@ const storeRef = storeToRefs(store)
       <div class="separator" aria-hidden />
     </Fragment>
     <Fragment>
+      <ToggleInput
+        label="Round Corners"
+        property="roundCorners"
+        @handle-change="store.toggleRoundedCorners"
+      />
+      <div class="separator" aria-hidden />
+    </Fragment>
+    <Fragment>
       <TextInput
         label="Font"
         property="font"

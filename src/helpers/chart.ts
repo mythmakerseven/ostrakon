@@ -108,6 +108,8 @@ export async function downloadChart(): Promise<void> {
   const onclone = (doc) => {
     const chart = doc.querySelector('#chart') as HTMLElement
     chart.style.transform = 'none'
+    chart.style.maxHeight = '3500px'
+    chart.style.maxWidth = '3500px'
   }
 
   const result = await html2canvas.default(element, {

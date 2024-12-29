@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
+import { BIconX } from 'bootstrap-icons-vue'
+import { ref, watch } from 'vue'
 import { useStore } from '../../../store'
 
 const props = defineProps(['item', 'index', 'title'])
@@ -33,15 +36,16 @@ function handleDragStart(ev: DragEvent) {
     const container = document.createElement('div')
     container.style.height = '100px'
     container.style.width = '100px'
-    container.style.position = 'absolute'
+    container.style.position = 'fixed'
     container.style.left = '10000px'
     container.appendChild(dragImg)
 
-    document.body.appendChild(container)
+    const appEl = document.querySelector('#app')
+    appEl.appendChild(container)
 
     ev.dataTransfer.effectAllowed = 'move'
     ev.dataTransfer.setData('application/json', dragData)
-    ev.dataTransfer.setDragImage(container, 0, 0)
+    ev.dataTransfer.setDragImage(container, 50, 50)
   }
 }
 
@@ -57,19 +61,43 @@ function handleDrop(ev: DragEvent) {
     }
   }
 }
+
+const imgStyle = ref<CSSProperties>({})
+
+watch(() => [store.chart.shadows, store.chart.roundCorners], () => {
+  imgStyle.value = {
+    borderRadius: store.chart.roundCorners ? '10px' : '',
+    filter: store.chart.shadows ? 'drop-shadow(2px 2px 4px rgba(0,0,0,0.6))' : '',
+    backgroundImage: props.item ? `url(${props.item.coverURL})` : undefined,
+  }
+})
+
+function deleteItem() {
+  store.addItem({ item: null, index: props.index })
+}
 </script>
 
 <template>
   <div
+    :key="item ? item.coverURL : undefined"
     :class="`item ${item ? '' : 'placeholder'}`"
     :data-index="props.index"
     :title="props.item ? props.title : undefined"
+    :style="imgStyle"
+    :draggable="!!props.item"
     @dragstart="handleDragStart"
     @dragover="allowDrop"
     @drop="handleDrop"
   >
-    <img v-if="props.item" :alt="props.item.title" :src="props.item.coverURL">
-    <img v-else src="/placeholder.svg">
+    <button
+      v-if="props.item"
+      class="delete-button"
+      data-html2canvas-ignore
+      title="Delete item"
+      @click="deleteItem"
+    >
+      <BIconX />
+    </button>
   </div>
 </template>
 
@@ -77,21 +105,47 @@ function handleDrop(ev: DragEvent) {
 .item {
   height: 260px;
   width: 260px;
-  min-height: 260px;
-  min-width: 260px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  -webkit-user-select: none;
+  position: relative;
 }
 
-img {
-  height: 100%;
-  width: 100%;
-  object-fit: contain;
+.delete-button {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  height: 60px;
+  width: 60px;
+  appearance: none;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 5px;
+  color: #ffffff;
+  border: none;
 }
 
-img:hover {
+.delete-button:hover {
   cursor: pointer;
 }
 
-.placeholder img:hover {
-  cursor: initial
+.delete-button svg {
+  height: 100%;
+  width: 100%;
+}
+
+.item:hover .delete-button {
+  display: initial;
+}
+
+.placeholder {
+  background-color: rgba(90, 90, 90, 0.6);
+}
+
+@media (hover: none) {
+  .delete-button {
+    display: initial;
+  }
 }
 </style>

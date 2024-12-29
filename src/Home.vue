@@ -86,7 +86,7 @@ function returnToHomepage() {
 #app {
   font-family: "Nunito", sans-serif;
   color: var(--text-color);
-  overflow-y: hidden;
+  overflow: hidden;
   box-sizing: border-box;
   scrollbar-color: var(--accent) black;
   scrollbar-width: thin;
@@ -100,7 +100,6 @@ h1, h2, h3, h4 {
 body {
   background: #2a2a2a;
   touch-action: manipulation;
-  overflow-x: hidden;
 }
 
 button {

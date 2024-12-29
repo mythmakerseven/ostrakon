@@ -24,6 +24,7 @@ export const initialState = {
     font: 'monospace',
     textColor: '#ffffff',
     shadows: true,
+    roundCorners: false,
   },
 } as State
 
@@ -110,6 +111,9 @@ export const useStore = defineStore('store', {
     },
     toggleShadows(newValue: boolean) {
       this.chart = { ...this.chart, shadows: newValue }
+    },
+    toggleRoundedCorners(newValue: boolean) {
+      this.chart = { ...this.chart, roundCorners: newValue }
     },
     setEntireChart(payload: Chart) {
       this.chart = { ...payload }

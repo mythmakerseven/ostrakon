@@ -36,6 +36,7 @@ export interface Chart {
   font?: string
   textColor?: string
   shadows?: boolean
+  roundCorners: boolean
 }
 
 export interface IgdbItem {

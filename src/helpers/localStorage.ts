@@ -126,6 +126,8 @@ export function localStorageMigrations() {
 
 // Applies migrations to a single chart and returns whether changes were made
 export function migrateChart(chart: StoredPremigrationChart) {
+  let changed = false
+
   if (!chart.data.backgroundType) {
     chart.data.backgroundType = chart.data.background?.type || BackgroundTypes.Color
 
@@ -137,6 +139,13 @@ export function migrateChart(chart: StoredPremigrationChart) {
       ? chart.data.background?.value || ''
       : ''
 
-    return true
+    changed = true
   }
+
+  if (typeof chart.data.roundCorners === 'undefined') {
+    chart.data.roundCorners = false
+    changed = true
+  }
+
+  return changed
 }

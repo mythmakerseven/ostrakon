@@ -40,10 +40,10 @@ watch(() => [store.chart.items, store.chart.size], () => {
 
   if (titleListRef.value) {
     if (store.chart.size.x > 10) {
-      titleListRef.value.style.lineHeight = '1.1'
+      titleListRef.value.style.lineHeight = '1'
     }
     else {
-      titleListRef.value.style.lineHeight = '1'
+      titleListRef.value.style.lineHeight = '1.2'
     }
   }
 })
@@ -74,8 +74,8 @@ watch(() => [store.chart.items, store.chart.size], () => {
 .title-list {
   text-wrap-mode: nowrap;
   text-align: left;
-  margin: 8px;
   padding: 0;
+  margin: 0;
   font-size: 20px;
   line-height: 1;
   list-style: none;

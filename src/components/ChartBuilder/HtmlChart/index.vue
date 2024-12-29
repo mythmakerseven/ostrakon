@@ -16,7 +16,7 @@ function onResize() {
   if (chartRef.value) {
     const windowWidth = chartRef.value.parentElement.offsetWidth
     // add 100 to factor in the 50px X margins
-    const chartWidth = chartRef.value.offsetWidth + 100
+    const chartWidth = chartRef.value.offsetWidth + 150
 
     const ratio = windowWidth / chartWidth
 
@@ -69,13 +69,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div id="chart" ref="chartRef" :style="backgroundStyle">
+  <div
+    id="chart"
+    ref="chartRef"
+    :style="backgroundStyle"
+  >
     <div v-if="store.chart.title">
       <p ref="chartTitleRef" class="chart-title">
         {{ store.chart.title }}
       </p>
     </div>
-    <div class="row-flex" :style="{ gap: `${store.chart.gap}px`, padding: `${store.chart.gap}px` }">
+    <div class="row-flex" :style="{ gap: `${store.chart.gap}px`, padding: `${store.chart.gap}px`, paddingTop: store.chart.title ? `${store.chart.gap / 2}px` : `${store.chart.gap}px` }">
       <Row v-for="rowNumber in store.chart.size.y" :key="rowNumber" :row="rowNumber" />
     </div>
   </div>
