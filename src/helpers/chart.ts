@@ -126,7 +126,8 @@ export async function downloadChart(): Promise<void> {
   const result = await html2canvas.default(element, {
     useCORS: true,
     onclone,
-    proxy: import.meta.env.VITE_BACKEND_URL,
+    proxy: `${import.meta.env.VITE_BACKEND_URL}/api/proxy`,
+    backgroundColor: null,
   })
 
   const blob = await new Promise(resolve => result.toBlob(resolve)) as Blob

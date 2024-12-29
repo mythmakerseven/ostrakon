@@ -34,13 +34,17 @@ watch(store, () => {
     gridTemplateRows: `repeat(${store.chart.size.y}, 1fr)`,
   }
 
-  chartTitleRef.value.style.margin = `${store.chart.gap / 2}px 0`
-
-  if (store.chart.font) {
-    chartRef.value.style.fontFamily = store.chart.font
+  if (chartTitleRef.value) {
+    chartTitleRef.value.style.marginTop = `${store.chart.gap / 2}px`
   }
-  else {
-    chartRef.value.style.fontFamily = 'monospace'
+
+  if (chartRef.value) {
+    if (store.chart.font) {
+      chartRef.value.style.fontFamily = store.chart.font
+    }
+    else {
+      chartRef.value.style.fontFamily = 'monospace'
+    }
   }
 
   onResize()
@@ -65,7 +69,7 @@ onUnmounted(() => {
         {{ store.chart.title }}
       </p>
     </div>
-    <div class="row-flex" :style="{ gap: `${store.chart.gap}px`, padding: `${store.chart.gap}px`, paddingTop: '0' }">
+    <div class="row-flex" :style="{ gap: `${store.chart.gap}px`, padding: `${store.chart.gap}px` }">
       <Row v-for="rowNumber in store.chart.size.y" :key="rowNumber" :row="rowNumber" />
     </div>
   </div>
@@ -73,7 +77,7 @@ onUnmounted(() => {
 
 <style>
 #chart {
-  border-radius: 5px;
+  border-radius: 1%;
   margin: 50px 20px;
   display: inline-block;
   position: absolute;
@@ -85,6 +89,7 @@ onUnmounted(() => {
 #chart .chart-title {
   font-size: 50px;
   padding: 0;
+  margin: 0;
 }
 
 #chart .row-flex {

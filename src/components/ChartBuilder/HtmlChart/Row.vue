@@ -9,25 +9,26 @@ const store = useStore()
 
 const buildTitle = (item: ChartItem) => `${[item.creator, item.title].filter(Boolean).join(' - ')}`
 
+interface ItemWithIndex {
+  item: ChartItem
+  index: number
+  title: string | null
+}
+
 function getData() {
   const start = (props.row - 1) * store.chart.size.x
-  const items = store.chart.items.slice(
-    start,
-    start + store.chart.size.x,
-  )
+  const data: ItemWithIndex[] = []
 
-  const titles = []
-
-  for (const item of items) {
-    if (item) {
-      titles.push(buildTitle(item))
-    }
+  for (let i = start; i < start + store.chart.size.x; i++) {
+    const item = store.chart.items[i]
+    data.push({
+      item,
+      index: i,
+      title: item ? buildTitle(item) : null,
+    })
   }
 
-  return {
-    items,
-    titles,
-  }
+  return data
 }
 
 const data = ref(getData())
@@ -35,22 +36,32 @@ const titleListRef = ref<HTMLOListElement>(null)
 
 watch(() => [store.chart.items, store.chart.size], () => {
   data.value = getData()
+
+  if (titleListRef.value) {
+    if (store.chart.size.x > 10) {
+      titleListRef.value.style.lineHeight = '1.1'
+    }
+    else {
+      titleListRef.value.style.lineHeight = '1'
+    }
+  }
 })
 </script>
 
 <template>
   <div class="item-row" :style="{ gap: `${store.chart.gap}px`, gridTemplateColumns: `repeat(${store.chart.size.y + 1}, 1fr)` }">
     <template
-      v-for="(item, _idx) in data.items" :key="_idx"
+      v-for="(d) in data" :key="d.index"
     >
       <div class="item">
-        <img v-if="item" :alt="item.title" :src="item.coverURL">
+        <img v-if="d.item" :alt="d.title" :src="d.item.coverURL">
         <img v-else src="/placeholder.svg">
       </div>
     </template>
-    <ol v-if="store.chart.showTitles && data.titles.length > 0" ref="titleListRef" class="title-list" :style="{ listStyleType: store.chart.showNumbers ? 'decimal' : 'none' }">
-      <li v-for="(title, idx) in data.titles" :key="idx">
-        {{ title }}
+    <ol v-if="store.chart.showTitles && data.some(i => i.title)" ref="titleListRef" class="title-list">
+      <li v-for="(d, idx) in data.filter(i => i && i.title)" :key="idx">
+        {{ store.chart.showNumbers ? `${d.index + 1}.` : '' }}
+        {{ d.title }}
       </li>
     </ol>
   </div>
@@ -70,8 +81,13 @@ watch(() => [store.chart.items, store.chart.size], () => {
 }
 
 img {
-  max-height: 100%;
-  max-width: 100%;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+img:hover {
+  cursor: pointer;
 }
 
 .title-list {
@@ -81,5 +97,6 @@ img {
   padding: 0;
   font-size: 20px;
   line-height: 1;
+  list-style: none;
 }
 </style>
