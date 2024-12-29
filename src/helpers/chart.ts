@@ -105,7 +105,7 @@ export async function downloadChart(): Promise<void> {
 
   // Remove the scale transform - otherwise, html2canvas
   // will download a degraded quality version of the chart.
-  const onclone = (doc) => {
+  const onclone = (doc: Document) => {
     const chart = doc.querySelector('#chart') as HTMLElement
     chart.style.transform = 'none'
     chart.style.maxHeight = '3500px'

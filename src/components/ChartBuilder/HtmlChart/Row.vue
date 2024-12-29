@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { ComputedRef, CSSProperties } from 'vue'
 import type { ChartItem } from '../../../types'
-import { ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useStore } from '../../../store'
 import Item from './Item.vue'
 
@@ -16,7 +17,7 @@ interface ItemWithIndex {
   title: string | null
 }
 
-function getData() {
+const data = computed(() => {
   const start = (props.row - 1) * store.chart.size.x
   const data: ItemWithIndex[] = []
 
@@ -30,23 +31,11 @@ function getData() {
   }
 
   return data
-}
-
-const data = ref(getData())
-const titleListRef = ref<HTMLOListElement>(null)
-
-watch(() => [store.chart.items, store.chart.size], () => {
-  data.value = getData()
-
-  if (titleListRef.value) {
-    if (store.chart.size.x > 10) {
-      titleListRef.value.style.lineHeight = '1'
-    }
-    else {
-      titleListRef.value.style.lineHeight = '1.2'
-    }
-  }
 })
+
+const titleListStyle: ComputedRef<CSSProperties> = computed(() => ({
+  lineHeight: store.chart.size.x > 10 ? '1' : '1.2',
+}))
 </script>
 
 <template>
@@ -56,7 +45,7 @@ watch(() => [store.chart.items, store.chart.size], () => {
     >
       <Item :item="d.item" :index="d.index" :title="d.title" />
     </template>
-    <ol v-if="store.chart.showTitles && data.some(i => i.title)" ref="titleListRef" class="title-list">
+    <ol v-if="store.chart.showTitles && data.some(i => i.title)" class="title-list" :style="titleListStyle">
       <li v-for="(d, idx) in data.filter(i => i && i.title)" :key="idx">
         {{ store.chart.showNumbers ? `${d.index + 1}.` : '' }}
         {{ d.title }}
