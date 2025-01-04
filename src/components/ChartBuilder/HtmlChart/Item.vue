@@ -32,10 +32,11 @@ function handleDragStart(ev: DragEvent) {
     dragImg.style.height = '100%'
     dragImg.style.width = '100%'
     dragImg.style.objectFit = 'contain'
+    dragImg.style.filter = 'opacity(0.9)'
 
     const container = document.createElement('div')
-    container.style.height = '100px'
-    container.style.width = '100px'
+    container.style.height = '80px'
+    container.style.width = '80px'
     container.style.position = 'fixed'
     container.style.left = '10000px'
     container.appendChild(dragImg)
@@ -45,7 +46,7 @@ function handleDragStart(ev: DragEvent) {
 
     ev.dataTransfer.effectAllowed = 'move'
     ev.dataTransfer.setData('application/json', dragData)
-    ev.dataTransfer.setDragImage(container, 50, 50)
+    ev.dataTransfer.setDragImage(container, 40, 40)
   }
 }
 

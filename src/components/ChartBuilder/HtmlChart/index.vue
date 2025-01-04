@@ -116,7 +116,8 @@ onUnmounted(() => {
 
 @media screen and (max-width: 1000px) {
   #chart {
-    left: 0
+    left: 0;
+    /* margin-top: 50px; */
   }
 }
 </style>
