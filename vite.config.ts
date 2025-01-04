@@ -4,4 +4,9 @@ import { defineConfig } from 'vite'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  build: {
+    rollupOptions: {
+      external: ['/drag-drop-touch.esm.min.js'],
+    },
+  },
 })

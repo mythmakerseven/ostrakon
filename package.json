@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "bootstrap-icons-vue": "^1.11.3",
-    "html2canvas": "github:camdendotlol/html2canvas-better-cors#master",
+    "html2canvas": "github:camdendotlol/html2canvas-smart-cors#master",
     "pinia": "^2.2.6",
     "uuid": "^11.0.3",
     "vue": "^3.5.12"

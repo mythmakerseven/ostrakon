@@ -67,8 +67,7 @@ const imgStyle = ref<CSSProperties>({})
 watch(() => [store.chart.shadows, store.chart.roundCorners], () => {
   imgStyle.value = {
     borderRadius: store.chart.roundCorners ? '10px' : '',
-    filter: store.chart.shadows ? 'drop-shadow(2px 2px 4px rgba(0,0,0,0.6))' : '',
-    backgroundImage: props.item ? `url(${props.item.coverURL})` : undefined,
+    boxShadow: store.chart.shadows ? '2px 2px 4px rgba(0,0,0,0.6)' : '',
   }
 })
 
@@ -79,12 +78,12 @@ function deleteItem() {
 
 <template>
   <div
-    :key="item ? item.coverURL : undefined"
-    :class="`item ${item ? '' : 'placeholder'}`"
+    :key="props.item ? props.item.coverURL : undefined"
+    :class="`item ${props.item ? '' : 'placeholder'}`"
     :data-index="props.index"
     :title="props.item ? props.title : undefined"
-    :style="imgStyle"
     :draggable="!!props.item"
+    :data-html2canvas-ignore="props.item ? undefined : true"
     @dragstart="handleDragStart"
     @dragover="allowDrop"
     @drop="handleDrop"
@@ -98,6 +97,12 @@ function deleteItem() {
     >
       <BIconX />
     </button>
+    <img
+      v-if="item"
+      :src="item.coverURL"
+      class="item-img"
+      :style="imgStyle"
+    >
   </div>
 </template>
 
@@ -105,11 +110,17 @@ function deleteItem() {
 .item {
   height: 260px;
   width: 260px;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  -webkit-user-select: none;
   position: relative;
+}
+
+.item-img {
+  max-height: 100%;
+  max-width: 100%;
+  user-select: none;
+}
+
+.item-img:hover {
+  cursor: pointer;
 }
 
 .delete-button {

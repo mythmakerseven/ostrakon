@@ -50,6 +50,10 @@ watch(store, () => {
       chartRef.value.style.textShadow = '2px 2px 4px rgba(0,0,0,0.6)'
     }
 
+    if (store.chart.roundCorners) {
+      chartRef.value.style.borderRadius = '10px'
+    }
+
     chartRef.value.style.color = store.chart.textColor
   }
 
@@ -87,7 +91,6 @@ onUnmounted(() => {
 
 <style>
 #chart {
-  border-radius: 1%;
   margin: 50px 20px;
   display: inline-block;
   position: absolute;

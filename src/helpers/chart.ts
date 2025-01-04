@@ -96,7 +96,7 @@ export function createChartItem(item: Result): ChartItem {
 }
 
 export async function downloadChart(): Promise<void> {
-  const html2canvas = await import('html2canvas')
+  const html2Canvas = await import('html2canvas')
   const element = document.querySelector('#chart') as HTMLElement
 
   if (!element) {
@@ -108,15 +108,16 @@ export async function downloadChart(): Promise<void> {
   const onclone = (doc: Document) => {
     const chart = doc.querySelector('#chart') as HTMLElement
     chart.style.transform = 'none'
-    chart.style.maxHeight = '3500px'
-    chart.style.maxWidth = '3500px'
+    chart.style.maxHeight = '5000px'
+    chart.style.maxWidth = '5000px'
   }
 
-  const result = await html2canvas.default(element, {
+  const result = await html2Canvas.default(element, {
     useCORS: true,
     onclone,
     proxy: `${import.meta.env.VITE_BACKEND_URL}/api/proxy`,
     backgroundColor: null,
+    scale: 1.5,
   })
 
   const blob = await new Promise(resolve => result.toBlob(resolve)) as Blob
