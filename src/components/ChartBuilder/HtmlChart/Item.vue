@@ -111,12 +111,15 @@ function deleteItem() {
   height: 260px;
   width: 260px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .item-img {
   max-height: 100%;
   max-width: 100%;
-  user-select: none;
+  height: inherit;
 }
 
 .item-img:hover {
