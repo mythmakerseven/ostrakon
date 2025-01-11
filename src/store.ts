@@ -28,6 +28,15 @@ export const initialState = {
   },
 } as State
 
+interface ItemData {
+  data: ChartItem | null
+  title?: string
+  number?: number
+  originalIndex: number
+}
+
+const buildTitle = (item: ChartItem) => `${[item.creator, item.title].filter(Boolean).join(' - ')}`
+
 export const useStore = defineStore('store', {
   state() {
     return { ...initialState }
@@ -120,6 +129,32 @@ export const useStore = defineStore('store', {
     },
     reset() {
       this.chart = { ...initialState.chart }
+    },
+  },
+  getters: {
+    // Get the list of chart items, along with some computed metadata
+    // that's generally useful throughout the application.
+    items(state): Array<ItemData | null> {
+      // For numbered charts, we use this variable to track the number
+      // of each non-null item. We can't just use the index because
+      // we don't want to count null numbers.
+      let counter = 0
+
+      return state.chart.items.map((item, idx) => {
+        if (!item) {
+          return {
+            data: null,
+            originalIndex: idx,
+          }
+        }
+
+        return {
+          data: item,
+          number: counter++,
+          title: buildTitle(item),
+          originalIndex: idx,
+        }
+      })
     },
   },
 })

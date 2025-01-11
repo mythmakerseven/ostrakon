@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ComputedRef, CSSProperties } from 'vue'
-import type { ChartItem } from '../../../types'
 import { computed } from 'vue'
 import { useStore } from '../../../store'
 import Item from './Item.vue'
@@ -9,28 +8,10 @@ const props = defineProps(['row'])
 
 const store = useStore()
 
-const buildTitle = (item: ChartItem) => `${[item.creator, item.title].filter(Boolean).join(' - ')}`
-
-interface ItemWithIndex {
-  item: ChartItem
-  index: number
-  title: string | null
-}
-
-const data = computed(() => {
+const rowItems = computed(() => {
   const start = (props.row - 1) * store.chart.size.x
-  const data: ItemWithIndex[] = []
-
-  for (let i = start; i < start + store.chart.size.x; i++) {
-    const item = store.chart.items[i]
-    data.push({
-      item,
-      index: i,
-      title: item ? buildTitle(item) : null,
-    })
-  }
-
-  return data
+  const end = start + store.chart.size.x
+  return store.items.slice(start, end)
 })
 
 const titleListStyle: ComputedRef<CSSProperties> = computed(() => ({
@@ -41,14 +22,16 @@ const titleListStyle: ComputedRef<CSSProperties> = computed(() => ({
 <template>
   <div class="item-row" :style="{ gap: `${store.chart.gap}px`, gridTemplateColumns: `repeat(${store.chart.size.y + 1}, 1fr)` }">
     <template
-      v-for="(d) in data" :key="d.index"
+      v-for="item in rowItems" :key="item.originalIndex"
     >
-      <Item :item="d.item" :index="d.index" :title="d.title" />
+      <Item :item="item.data" :index="item.originalIndex" :title="item.title" />
     </template>
-    <ol v-if="store.chart.showTitles && data.some(i => i.title)" class="title-list" :style="titleListStyle">
-      <li v-for="(d, idx) in data.filter(i => i && i.title)" :key="idx">
-        {{ store.chart.showNumbers ? `${d.index + 1}.` : '' }}
-        {{ d.title }}
+    <ol v-if="store.chart.showTitles && rowItems.some(i => i.title)" class="title-list" :style="titleListStyle">
+      <li v-for="(item, idx) in rowItems" :key="idx">
+        <span v-if="item.number">
+          {{ store.chart.showNumbers ? `${item.number}.` : '' }}
+          {{ item.title }}
+        </span>
       </li>
     </ol>
   </div>

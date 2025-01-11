@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties, Ref } from 'vue'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useStore } from '../../../store'
 import { BackgroundTypes } from '../../../types'
 import Row from './Row.vue'
@@ -21,6 +21,8 @@ function onResize() {
     const ratio = windowWidth / chartWidth
 
     chartRef.value.style.transform = `scale(${ratio})`
+    chartRef.value.style.marginLeft = `${40 * ratio}px`
+    chartRef.value.style.marginRight = `${40 * ratio}px`
   }
 }
 
@@ -52,6 +54,9 @@ watch(store, () => {
 
     if (store.chart.roundCorners) {
       chartRef.value.style.borderRadius = '10px'
+    }
+    else {
+      chartRef.value.style.borderRadius = '0'
     }
 
     chartRef.value.style.color = store.chart.textColor

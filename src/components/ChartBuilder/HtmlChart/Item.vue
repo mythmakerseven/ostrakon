@@ -65,12 +65,12 @@ function handleDrop(ev: DragEvent) {
 
 const imgStyle = ref<CSSProperties>({})
 
-watch(() => [store.chart.shadows, store.chart.roundCorners], () => {
+watch(store, () => {
   imgStyle.value = {
     borderRadius: store.chart.roundCorners ? '10px' : '',
     boxShadow: store.chart.shadows ? '2px 2px 4px rgba(0,0,0,0.6)' : '',
   }
-})
+}, { immediate: true })
 
 function deleteItem() {
   store.addItem({ item: null, index: props.index })
@@ -79,12 +79,12 @@ function deleteItem() {
 
 <template>
   <div
-    :key="props.item ? props.item.coverURL : undefined"
+    :key="props.item ? props.item.coverURL : props.index"
     :class="`item ${props.item ? '' : 'placeholder'}`"
     :data-index="props.index"
-    :title="props.item ? props.title : undefined"
+    :title="props.title"
     :draggable="!!props.item"
-    :data-html2canvas-ignore="props.item ? undefined : true"
+    :style="props.item ? undefined : imgStyle"
     @dragstart="handleDragStart"
     @dragover="allowDrop"
     @drop="handleDrop"

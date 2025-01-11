@@ -1,4 +1,4 @@
-???, 2024: Replaced the Canvas chart with regular HTML elements.
+???, 2025: Replaced the Canvas chart with regular HTML elements.
 
 This is the most substantial update to the site so far, as it involved totally rewriting the code that renders the chart.
 

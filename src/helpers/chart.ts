@@ -110,6 +110,17 @@ export async function downloadChart(): Promise<void> {
     chart.style.transform = 'none'
     chart.style.maxHeight = '5000px'
     chart.style.maxWidth = '5000px'
+
+    const placeholders = doc.querySelectorAll('.placeholder')
+
+    // make placeholders invisible
+    // we can't remove/ignore them because we need them to take up space
+    for (let i = 0; i < placeholders.length; i++) {
+      const ph = placeholders[i] as HTMLElement
+
+      ph.classList.remove('placeholder')
+      ph.style.boxShadow = 'none'
+    }
   }
 
   const result = await html2Canvas.default(element, {
@@ -117,7 +128,7 @@ export async function downloadChart(): Promise<void> {
     onclone,
     proxy: `${import.meta.env.VITE_BACKEND_URL}/api/proxy`,
     backgroundColor: null,
-    scale: 1.5,
+    scale: 1,
   })
 
   const blob = await new Promise(resolve => result.toBlob(resolve)) as Blob
