@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue'
+import type { ComputedRef, CSSProperties } from 'vue'
 import { BIconX } from 'bootstrap-icons-vue'
-import { ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useStore } from '../../../store'
 
 const props = defineProps(['item', 'index', 'title'])
@@ -63,14 +63,10 @@ function handleDrop(ev: DragEvent) {
   }
 }
 
-const imgStyle = ref<CSSProperties>({})
-
-watch(store, () => {
-  imgStyle.value = {
-    borderRadius: store.chart.roundCorners ? '10px' : '',
-    boxShadow: store.chart.shadows ? '2px 2px 4px rgba(0,0,0,0.6)' : '',
-  }
-}, { immediate: true })
+const imgStyle: ComputedRef<CSSProperties> = computed(() => ({
+  borderRadius: store.chart.roundCorners ? '10px' : '',
+  boxShadow: store.chart.shadows ? '2px 2px 4px rgba(0,0,0,0.6)' : '',
+}))
 
 function deleteItem() {
   store.addItem({ item: null, index: props.index })

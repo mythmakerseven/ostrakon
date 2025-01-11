@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { CSSProperties, Ref } from 'vue'
+import type { ComputedRef, CSSProperties } from 'vue'
+import type { Chart } from '../../../types'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useStore } from '../../../store'
 import { BackgroundTypes } from '../../../types'
@@ -7,10 +8,7 @@ import Row from './Row.vue'
 
 const store = useStore()
 
-const backgroundStyle: Ref<CSSProperties> = ref({})
-const gridStyle: Ref<CSSProperties> = ref({})
 const chartRef = ref<HTMLDivElement>(null)
-const chartTitleRef = ref<HTMLParagraphElement>(null)
 
 function onResize() {
   if (chartRef.value) {
@@ -26,47 +24,47 @@ function onResize() {
   }
 }
 
+// re-scale the chart when the state changes
 watch(store, () => {
-  backgroundStyle.value = store.chart.backgroundType === BackgroundTypes.Color
-    ? { backgroundColor: store.chart.backgroundColor }
-    : { backgroundImage: `url("${store.chart.backgroundUrl}")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover' }
-
-  gridStyle.value = {
-    gridTemplateColumns: `repeat(${store.chart.size.x}, 1fr)`,
-    gridTemplateRows: `repeat(${store.chart.size.y}, 1fr)`,
-  }
-
-  if (chartTitleRef.value) {
-    chartTitleRef.value.style.marginTop = `${store.chart.gap / 2}px`
-  }
-
-  if (chartRef.value) {
-    if (store.chart.font) {
-      chartRef.value.style.fontFamily = store.chart.font
-    }
-    else {
-      chartRef.value.style.fontFamily = 'monospace'
-    }
-
-    if (store.chart.shadows) {
-      chartRef.value.style.textShadow = '2px 2px 4px rgba(0,0,0,0.6)'
-    }
-
-    if (store.chart.roundCorners) {
-      chartRef.value.style.borderRadius = '10px'
-    }
-    else {
-      chartRef.value.style.borderRadius = '0'
-    }
-
-    chartRef.value.style.color = store.chart.textColor
-  }
-
   onResize()
   // { flush: 'post' } tells Vue to wait until the state is finished changing
   // before running the watcher function. otherwise, onResize runs before the
   // chart is finished updating and gets stuck one state update behind.
 }, { flush: 'post' })
+
+function getBackgroundStyle(chart: Chart): CSSProperties {
+  if (chart.backgroundType === BackgroundTypes.Color) {
+    return ({
+      backgroundColor: store.chart.backgroundColor,
+    })
+  }
+
+  // default to black background when no image URL has been entered
+  if (!chart.backgroundUrl) {
+    return ({
+      backgroundColor: '#000',
+    })
+  }
+
+  return ({
+    backgroundImage: `url("${store.chart.backgroundUrl}")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
+  })
+}
+
+const chartTitleStyle: ComputedRef<CSSProperties> = computed(() => ({
+  marginTop: `${store.chart.gap / 2}px`,
+}))
+
+const chartStyle: ComputedRef<CSSProperties> = computed(() => ({
+  fontFamily: store.chart.font || 'monospace',
+  textShadow: store.chart.shadows ? '2px 2px 4px rgba(0,0,0,0.6)' : 'none',
+  borderRadius: store.chart.roundCorners ? '10px' : '0',
+  color: store.chart.textColor,
+  ...getBackgroundStyle(store.chart),
+}))
 
 onMounted(() => {
   window.onresize = onResize
@@ -81,10 +79,10 @@ onUnmounted(() => {
   <div
     id="chart"
     ref="chartRef"
-    :style="backgroundStyle"
+    :style="chartStyle"
   >
     <div v-if="store.chart.title">
-      <p ref="chartTitleRef" class="chart-title">
+      <p class="chart-title" :style="chartTitleStyle">
         {{ store.chart.title }}
       </p>
     </div>
