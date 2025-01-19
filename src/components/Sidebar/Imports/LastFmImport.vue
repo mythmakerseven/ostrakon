@@ -43,15 +43,14 @@ async function importLastFmChart() {
     return true
   })
 
-  const newItems: ChartItem[] = filtered.map((item: LastfmChartResponseItem) => {
-    const coverURL = item.image.find(i => i.size === 'extralarge')['#text']
-    const coverImg = new Image()
-    coverImg.src = coverURL
+  const newItems = Array.from({ length: 144 }).fill(null) as ChartItem[]
 
-    return {
+  filtered.forEach((item: LastfmChartResponseItem, idx) => {
+    const coverURL = item.image.find(i => i.size === 'extralarge')['#text']
+
+    newItems[idx] = {
       title: item.name,
       creator: item.artist.name,
-      coverImg,
       coverURL,
     }
   })
@@ -167,6 +166,10 @@ async function importLastFmChart() {
   display: flex;
   flex-direction: column;
   margin: 0 40px;
+}
+
+.form-item input {
+  font-size: 16px;
 }
 
 .form-item label {

@@ -1,14 +1,11 @@
 // Functions for filling in the chart.
 
-import fetchImageURL from '../api/fetchImage'
-import generateChart from '../chartgen'
-import { initialState, useStore } from '../store'
-import {
-  BackgroundTypes,
-  type Chart,
-  type ChartItem,
-  type Result,
+import type {
+  Chart,
+  ChartItem,
+  Result,
 } from '../types'
+import { initialState, useStore } from '../store'
 import { appendChart, getActiveChart, setActiveChart } from './localStorage'
 import {
   isBookResult,
@@ -18,28 +15,6 @@ import {
   isMusicResult,
   isTVResult,
 } from './typeGuards'
-
-// Add the proper <img> elements into the chart state.
-// This is needed when loading a saved chart from localstorage.
-export function addImgElements(chart: Chart): Chart {
-  const itemsWithCovers = chart.items.map((item) => {
-    if (!item) {
-      return null
-    }
-
-    const cover = new Image()
-
-    cover.src = item.coverURL
-    item.coverImg = cover
-
-    return item
-  })
-
-  return {
-    ...chart,
-    items: itemsWithCovers,
-  }
-}
 
 // To run the first time Topsters.org launches, or when we want to reset everything.
 export function initializeFirstRun(): void {
@@ -61,9 +36,6 @@ export function createChartItem(item: Result): ChartItem {
   if (isBookResult(item)) {
     return {
       title: item.title,
-      coverImg: setImage(
-        `https://covers.openlibrary.org/b/olid/${item.cover_edition_key}-L.jpg`,
-      ),
       coverURL: `https://covers.openlibrary.org/b/olid/${item.cover_edition_key}-L.jpg`,
       creator: item.author_name[0],
     }
@@ -72,7 +44,6 @@ export function createChartItem(item: Result): ChartItem {
     const largestImageIndex = item.image.length - 1
     return {
       title: item.name,
-      coverImg: setImage(item.image[largestImageIndex]['#text']),
       coverURL: item.image[largestImageIndex]['#text'],
       creator: item.artist,
     }
@@ -80,21 +51,18 @@ export function createChartItem(item: Result): ChartItem {
   else if (isGameResult(item)) {
     return {
       title: item.name,
-      coverImg: setImage(item.cover),
       coverURL: item.cover,
     }
   }
   else if (isMovieResult(item)) {
     return {
       title: item.title,
-      coverImg: setImage(`https://image.tmdb.org/t/p/w185/${item.poster_path}`),
       coverURL: `https://image.tmdb.org/t/p/w185/${item.poster_path}`,
     }
   }
   else if (isTVResult(item)) {
     return {
       title: item.name,
-      coverImg: setImage(`https://image.tmdb.org/t/p/w185/${item.poster_path}`),
       coverURL: `https://image.tmdb.org/t/p/w185/${item.poster_path}`,
     }
   }
@@ -102,7 +70,6 @@ export function createChartItem(item: Result): ChartItem {
     return {
       title: item.title,
       creator: item.creator,
-      coverImg: setImage(item.imageURL),
       coverURL: item.imageURL,
     }
   }
@@ -111,80 +78,54 @@ export function createChartItem(item: Result): ChartItem {
   }
 }
 
-export async function downloadChart(chart: Chart): Promise<void> {
-  const chartData = { ...chart }
-  const downloadableChart = await createDownloadableChart(chartData)
-  const chartURL = downloadableChart.toDataURL()
-  saveChartImage(chartURL)
-}
+export async function downloadChart(): Promise<void> {
+  const html2Canvas = await import('html2canvas')
+  const element = document.querySelector('#chart') as HTMLElement
 
-// Hacky way to make sure all images are loaded in before saving the chart
-async function fillInItems(chart: Chart) {
-  const promises = []
-
-  // Get background image
-  if (
-    chart.backgroundType === BackgroundTypes.Image
-    && chart.backgroundUrl
-  ) {
-    const bgImgURL = await fetchImageURL(chart.backgroundUrl)
-    promises.push(
-      new Promise<void>((resolve) => {
-        const bgImg = new Image()
-        bgImg.src = bgImgURL
-        bgImg.onload = () => {
-          resolve()
-        }
-        bgImg.onerror = () => {
-          // eslint-disable-next-line no-console
-          console.log(`Error downloading image from ${bgImgURL}`)
-          resolve()
-        }
-        chart.backgroundImg = bgImg
-      }),
-    )
+  if (!element) {
+    throw new Error('Chart not found! Something must have gone horribly wrong.')
   }
 
-  const visibleItems = chart.items.slice(0, chart.size.x * chart.size.y)
+  // Remove the scale transform - otherwise, html2canvas
+  // will download a degraded quality version of the chart.
+  const onclone = (doc: Document) => {
+    const chart = doc.querySelector('#chart') as HTMLElement
+    chart.style.transform = 'none'
+    chart.style.maxHeight = '10000px'
+    chart.style.maxWidth = '10000px'
 
-  // Get chart item images
-  for (const item of visibleItems) {
-    if (item) {
-      const localURL = await fetchImageURL(item.coverURL)
-      promises.push(
-        new Promise<void>((resolve) => {
-          item.coverImg.src = localURL
-          item.coverImg.onload = () => {
-            resolve()
-          }
-        }),
-      )
+    const placeholders = doc.querySelectorAll('.placeholder')
+
+    // make placeholders invisible
+    // we can't remove/ignore them because we need them to take up space
+    for (let i = 0; i < placeholders.length; i++) {
+      const ph = placeholders[i] as HTMLElement
+
+      ph.classList.remove('placeholder')
+      ph.style.boxShadow = 'none'
     }
   }
 
-  await Promise.all(promises)
+  const result = await html2Canvas.default(element, {
+    useCORS: true,
+    onclone,
+    proxy: `${import.meta.env.VITE_BACKEND_URL}/api/proxy`,
+    backgroundColor: null,
+    scale: 1,
+  })
 
-  return chart
-}
-
-// Create a new canvas to render the final downloadable version.
-// This is needed to avoid CORS issues with third-party images.
-async function createDownloadableChart(data: Chart): Promise<HTMLCanvasElement> {
-  const chartCanvas = document.createElement('canvas')
-  const chart = await fillInItems(data)
-
-  // Populate the chart with the items etc.
-  generateChart(chartCanvas, chart)
-
-  return chartCanvas
+  const blob = await new Promise(resolve => result.toBlob(resolve)) as Blob
+  const url = URL.createObjectURL(blob)
+  saveChartImage(url)
 }
 
 // Saves the chart as an image
 function saveChartImage(url: string): void {
-  // Download the canvas
   const link = document.createElement('a')
   link.download = 'chart.png'
   link.href = url
+  link.rel = 'noopener'
+  link.target = '_self'
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

@@ -68,16 +68,16 @@ function addToChart(item: Result): void {
   if (firstEmptyIndex < totalSlots) {
     const newItem = createChartItem(item)
     store.addItem({ item: newItem, index: firstEmptyIndex })
-    store.setPopup(`Added ${newItem.title}`)
   }
 }
 
 function initDrag(event: DragEvent, result: Result): void {
-  const itemString = JSON.stringify(createChartItem(result))
-  // Some null-checking is needed here to satisfy TS
+  const dragData = JSON.stringify({
+    item: createChartItem(result),
+  })
+
   if (event.dataTransfer) {
-    // Put the item object into the the payload
-    event.dataTransfer.setData('application/json', itemString)
+    event.dataTransfer.setData('application/json', dragData)
   }
 }
 </script>
@@ -157,7 +157,6 @@ function initDrag(event: DragEvent, result: Result): void {
         <ResultItem
           :image-data="{ src: results[0].imageURL, alt: results[0].title }"
           draggable="true"
-          class="centered-item"
           @click="addToChart(results[0])"
           @dragstart="(event) => initDrag(event, results[0])"
         />

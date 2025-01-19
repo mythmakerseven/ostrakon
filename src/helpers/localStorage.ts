@@ -1,5 +1,6 @@
 // Functions for dealing with localStorage
 
+import { v4 as uuidv4 } from 'uuid'
 import { BackgroundTypes, type OldStoredChart, type StoredChart, type StoredCharts, type StoredPremigrationChart } from '../types'
 
 export function setActiveChart(uuid: string) {
@@ -65,7 +66,7 @@ export function findByUuid(uuid: string) {
 export function appendChart(newChart: StoredChart, uuid?: string): string {
   const charts = getStoredCharts()
 
-  const newUuid = uuid || crypto.randomUUID()
+  const newUuid = uuid || uuidv4()
 
   charts[newUuid] = newChart
 
@@ -89,7 +90,7 @@ export function newStructureMigration() {
     let activeUuid = null
 
     charts.forEach((chart) => {
-      const uuid = crypto.randomUUID()
+      const uuid = uuidv4()
       newObj[uuid] = {
         timestamp: chart.timestamp,
         data: chart.data,
@@ -125,6 +126,8 @@ export function localStorageMigrations() {
 
 // Applies migrations to a single chart and returns whether changes were made
 export function migrateChart(chart: StoredPremigrationChart) {
+  let changed = false
+
   if (!chart.data.backgroundType) {
     chart.data.backgroundType = chart.data.background?.type || BackgroundTypes.Color
 
@@ -136,10 +139,13 @@ export function migrateChart(chart: StoredPremigrationChart) {
       ? chart.data.background?.value || ''
       : ''
 
-    chart.data.backgroundImg = chart.data.background?.img
-      ? chart.data.background.img
-      : null
-
-    return true
+    changed = true
   }
+
+  if (typeof chart.data.roundCorners === 'undefined') {
+    chart.data.roundCorners = false
+    changed = true
+  }
+
+  return changed
 }

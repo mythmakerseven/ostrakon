@@ -43,6 +43,7 @@ function updateValue(event: Event) {
 }
 
 input {
+  font-size: 16px;
   height: 28px;
 }
 </style>

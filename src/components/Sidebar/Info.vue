@@ -11,7 +11,7 @@ import { BIconBoxArrowUpRight } from 'bootstrap-icons-vue'
     <h3>Why can't I find any King Crimson albums?</h3>
     <p>Not everything in the databases has cover art attached. Because charts require cover art, Topsters 3 filters out items that are missing it. For example, occasionally a band decides they don't want their cover art to appear in databases anymore, so they file a copyright takedown. You may have seen this happen on other sites such as Rate Your Music. This is very rare but it can affect popular items--as of this writing, all of King Crimson's releases are missing album art on Last.fm and as a result will not appear in search results.</p>
     <h3>Why is it called Topsters 3?</h3>
-    <p>The topster concept has been around for a while. Topsters 1 shut down years ago and Topsters 2 doesn't support games, books, or TV shows. That's why I made a new one.</p>
+    <p>The topster concept has been around for a while. Topsters 1 shut down years ago and Topsters 2 didn't support games, books, or TV shows. That was originally why I made a new one. Then Topsters 2 shut down in 2024.</p>
   </div>
 </template>
 

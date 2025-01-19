@@ -68,5 +68,19 @@ const emit = defineEmits([
   .active {
     text-decoration: underline;
   }
+
+  .nav-list {
+    position: absolute;
+    top: calc(50dvh - 30.5px);
+    z-index: 2;
+  }
+
+  .tab-item {
+    box-shadow: 0 0 2.5px 2px rgba(0, 0, 0, 0.18);;
+  }
+
+  .active {
+    background: #000000;
+  }
 }
 </style>

@@ -1,10 +1,6 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
   <div id="credits">
-    <p>Data credits</p>
+    <p>Data credits:</p>
     <div id="credits-flex">
       <a href="https://www.last.fm/">
         <img src="/lastfm_logo.svg" alt="Last.fm">
@@ -39,19 +35,15 @@
 }
 
 #credits-flex img {
-  width: 70px;
-}
-
-#tmdb-logo {
-  height: 32px;
+  width: 40px;
 }
 
 #ia-logo {
   filter: invert(1);
-  height: 44px;
+  height: 40px;
 }
 
 .disclaimer {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 </style>

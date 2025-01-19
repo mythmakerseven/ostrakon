@@ -12,7 +12,10 @@
   },
   "dependencies": {
     "bootstrap-icons-vue": "^1.11.3",
+    "drag-drop-touch": "github:drag-drop-touch-js/dragdroptouch",
+    "html2canvas": "github:camdendotlol/html2canvas-smart-cors#master",
     "pinia": "^2.3.0",
+    "uuid": "^11.0.3",
     "vue": "^3.5.13"
   },
   "devDependencies": {

@@ -1,7 +1,6 @@
 export interface ChartItem {
   title: string
   creator?: string
-  coverImg: HTMLImageElement
   coverURL: string
 }
 
@@ -28,7 +27,6 @@ export interface Chart {
   backgroundUrl: string
   backgroundColor: string
   backgroundType: BackgroundTypes
-  backgroundImg: HTMLImageElement | null
   title: string
   items: Array<ChartItem | null>
   size: ChartSize
@@ -38,6 +36,7 @@ export interface Chart {
   font?: string
   textColor?: string
   shadows?: boolean
+  roundCorners: boolean
 }
 
 export interface IgdbItem {

@@ -2,7 +2,6 @@
 import type { Ref } from 'vue'
 import type { StoredCharts } from '../../types'
 import { ref, watch } from 'vue'
-import { addImgElements } from '../../helpers/chart'
 import { getActiveChartUuid, getStoredCharts, getUuids, setActiveChart } from '../../helpers/localStorage'
 import { useStore } from '../../store'
 
@@ -31,11 +30,9 @@ function changeChart(event: Event) {
 
   const newActiveChart = setActiveChart(uuid)
 
-  const chartToSwitchTo = addImgElements(newActiveChart.data)
-
   activeChartUuid.value = uuid
 
-  store.setEntireChart(chartToSwitchTo)
+  store.setEntireChart(newActiveChart.data)
 }
 </script>
 

@@ -1,3 +1,9 @@
+???, 2025:
+
+* Added a new mobile UI that's very similar to the desktop UI, instead of maintaining two separate interfaces for desktop and mobile. 
+* Replaced the very complex Canvas graphics code with plain HTML elements and browser-native drag and drop functionality. This change is less immediately noticeable but should vastly improve performance, reduce bugs, and make it a lot easier for me to add features such as new layouts in the future.
+* Updated the method for removing items from the chart. Instead of dragging an item out of bounds, there is now an X button on each item. This button appears on hover when using a mouse, and is always visible when on a touchscreen.
+
 October 29, 2024: Redesigned the Options menu to be nicer looking, especially on Safari. Also, rewrote the Options menu code to be cleaner and less bug prone.
 
 June 22, 2024: Optimized the way the chart is rendered. The most significant change is that we're now using a separate Canvas layer for drag-and-drop, which should improve the framerate when moving items around on larger charts.
